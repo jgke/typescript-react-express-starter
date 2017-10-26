@@ -1,0 +1,28 @@
+{
+  "name": "typescript-react-express-typescript-starter-frontend",
+  "version": "0.1.0",
+  "description": "Fully typed fullstack starter for Typescript, React and Express",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jgke/typescript-react-express-starter"
+  },
+  "dependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "tslint": "^5.8.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^21.1.5",
+    "@types/node": "^8.0.47",
+    "@types/react": "^16.0.18",
+    "@types/react-dom": "^16.0.2",
+    "react-scripts-ts": "2.8.0"
+  },
+  "scripts": {
+    "start": "PORT=3001 react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject",
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
+  }
+}
