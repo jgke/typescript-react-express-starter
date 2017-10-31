@@ -43,9 +43,10 @@ function wrapApi(simpleApi: ApiMap): ApiMap {
 // tslint:disable:no-any
 const GET: any = {};
 const POST: any = {};
+const PUT: any = {};
 // tslint:enable:no-any
 
 export const apiMap: ApiMap = wrapApi({
     '/api': { GET, POST },
-    '/other': { GET, POST }
+    '/other': { GET, PUT }
 });

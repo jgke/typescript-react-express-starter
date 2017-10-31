@@ -44,7 +44,7 @@ export class App extends React.Component<{}, State> {
   private sendNumber(msg: React.ChangeEvent<HTMLInputElement>): void {
     const num = msg.target.value.replace('[^0-9]', '');
     if (num.length && Number.parseInt(num) !== this.state.num) {
-      apiMap['/other'].POST.fn({ msg: Number.parseInt(num) })
+      apiMap['/other'].PUT.fn({ msg: Number.parseInt(num) })
         .then(() => { this.updateMsg(); })
         .catch(console.warn);
     }

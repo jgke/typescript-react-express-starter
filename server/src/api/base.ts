@@ -1,6 +1,6 @@
 export type root = () => string;
 
-export type HTTPMethod = 'GET' | 'POST';
+export type HTTPMethod = 'GET' | 'POST' | 'PUT';
 
 export type HTTPStatus = 200;
 
@@ -19,7 +19,7 @@ export type ApiMethod<Method, RequestType, ResponseType> = [string, Method, ApiH
 export interface ApiMap {
     '/api': {
         GET: {
-            fn: (p?: undefined) => ApiResponse<string>;
+            fn: () => ApiResponse<string>;
             method: 'GET'; path: '/api';
         };
         POST: {
@@ -29,12 +29,12 @@ export interface ApiMap {
     };
     '/other': {
         GET: {
-            fn: (p?: undefined) => ApiResponse<number>;
+            fn: () => ApiResponse<number>;
             method: 'GET'; path: '/other';
         };
-        POST: {
+        PUT: {
             fn: (p: { msg: number }) => ApiResponse<number>;
-            method: 'POST'; path: '/other';
+            method: 'PUT'; path: '/other';
         };
     };
 }

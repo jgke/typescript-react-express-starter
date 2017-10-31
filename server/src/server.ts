@@ -33,7 +33,8 @@ const apiPrefix = '/api';
 
 const methods = {
   GET: app.get.bind(app),
-  POST: app.post.bind(app)
+  POST: app.post.bind(app),
+  PUT: app.put.bind(app)
 };
 
 function hostApi(api: ApiMap): void {
@@ -87,7 +88,7 @@ hostApi({
   },
   '/other': {
     GET: makeApiCall(() => makeResponse(200, apiController.getNumber())),
-    POST: makeApiCall<'/other', 'POST'>(msg => makeResponse(200, apiController.postNumber(msg.msg))),
+    PUT: makeApiCall<'/other', 'PUT'>(msg => makeResponse(200, apiController.postNumber(msg.msg))),
   }
 });
 
