@@ -2,7 +2,10 @@ export type root = () => string;
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT';
 
-export type HTTPStatus = 200;
+export enum HTTPStatus {
+    OK = 200,
+    InternalServerError = 500,
+}
 
 export interface ApiResponseValue<Res> {
     status: HTTPStatus;

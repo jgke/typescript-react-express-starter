@@ -10,7 +10,6 @@
         "member-ordering": false,
         "no-import-side-effect": false,
         "no-implicit-dependencies": [true, "dev"],
-        "no-magic-numbers": false,
         "no-unsafe-any": false,
         "object-literal-sort-keys": false,
         "only-arrow-functions": [true, "allow-declarations"],

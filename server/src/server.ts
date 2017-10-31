@@ -22,7 +22,8 @@ const app = express();
 /**
  * Express configuration.
  */
-app.set('port', process.env.PORT || 3000);
+const DEFAULT_PORT = 3000;
+app.set('port', process.env.PORT || DEFAULT_PORT);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,7 +53,7 @@ function hostApi(api: ApiMap): void {
             res.send(JSON.stringify(value.message));
           })
           .catch(() => {
-            res.status(500);
+            res.status(HTTPStatus.InternalServerError);
             res.send('Internal server error');
           });
       });
@@ -83,12 +84,12 @@ export function makeResponse<Res>(status: HTTPStatus, message: Res): ApiResponse
 
 hostApi({
   '/api': {
-    GET: makeApiCall(() => makeResponse(200, apiController.getApi())),
-    POST: makeApiCall<'/api', 'POST'>(msg => makeResponse(200, apiController.postApi(msg.message))),
+    GET: makeApiCall(() => makeResponse(HTTPStatus.OK, apiController.getApi())),
+    POST: makeApiCall<'/api', 'POST'>(msg => makeResponse(HTTPStatus.OK, apiController.postApi(msg.message))),
   },
   '/other': {
-    GET: makeApiCall(() => makeResponse(200, apiController.getNumber())),
-    PUT: makeApiCall<'/other', 'PUT'>(msg => makeResponse(200, apiController.postNumber(msg.msg))),
+    GET: makeApiCall(() => makeResponse(HTTPStatus.OK, apiController.getNumber())),
+    PUT: makeApiCall<'/other', 'PUT'>(msg => makeResponse(HTTPStatus.OK, apiController.postNumber(msg.msg))),
   }
 });
 
