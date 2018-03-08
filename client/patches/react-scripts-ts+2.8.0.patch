@@ -1,0 +1,11 @@
+patch-package
+--- a/node_modules/react-scripts-ts/config/webpack.config.dev.js
++++ b/node_modules/react-scripts-ts/config/webpack.config.dev.js
+@@ -126,6 +126,7 @@ module.exports = {
+       // Make sure your source files are compiled, as they will not be processed in any way.
+       new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+     ],
++    symlinks: false,
+   },
+   module: {
+     strictExportPresence: true,

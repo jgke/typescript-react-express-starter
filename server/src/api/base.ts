@@ -1,9 +1,36 @@
+// tslint:disable
+function str(): string {
+    return ((p: any) => typeof p === 'string') as any as string;
+}
+
+function num(): number {
+    return ((p: any) => typeof p === 'number') as any as number;
+}
+
+function obj<T>(p: T): T {
+    return ((inner: T) => console.log(inner, p) ||
+            Object.keys(p).every(
+                (checkme: keyof T) => (p as any)[checkme](inner[checkme]))
+    ) as any as T;
+}
+
+function zero<T>(returns: T) {
+    return (() => true) as any as () => ApiResponse<T>
+}
+
+function one<R, T>(takes: R, returns: T) {
+    return ((t: any) => (takes as any)(t)) as any as (p: R) => ApiResponse<T>
+}
+
+// tslint:enable
+
 export type root = () => string;
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT';
 
 export enum HTTPStatus {
     OK = 200,
+    Arg = 400,
     InternalServerError = 500
 }
 
@@ -13,10 +40,6 @@ export interface ApiResponseValue<Res> {
 }
 
 export type ApiResponse<Res> = Promise<ApiResponseValue<Res>>;
-
-export type ApiHandler<RequestType, ResponseType> = (request: RequestType) => ApiResponse<ResponseType>;
-
-export type ApiMethod<Method, RequestType, ResponseType> = [string, Method, ApiHandler<RequestType, ResponseType>];
 
 /**
  * The whole application API goes here. It should be in the form
@@ -28,26 +51,31 @@ export type ApiMethod<Method, RequestType, ResponseType> = [string, Method, ApiH
  * }
  */
 // tslint:disable:prefer-method-signature
-export interface ApiMap {
+export const apiObject = {
     '/api': {
         GET: {
-            fn: () => ApiResponse<string>;
-            // In order to get type checking working, these need to be duplicated
-            method: 'GET'; path: '/api';
-        };
+            fn: zero(str()),
+            method: 'GET' as 'GET',
+            path: '/api' as '/api'
+        },
         POST: {
-            fn: (p: { message: string }) => ApiResponse<string>;
-            method: 'POST'; path: '/api';
-        };
-    };
+            fn: one(obj({message: str()}), str()),
+            method: 'POST' as 'POST',
+            path: '/api' as '/api'
+        }
+    },
     '/other': {
         GET: {
-            fn: () => ApiResponse<number>;
-            method: 'GET'; path: '/other';
-        };
+            fn: zero(num()),
+            method: 'GET' as 'GET',
+            path: '/other' as '/other'
+        },
         PUT: {
-            fn: (p: { msg: number }) => ApiResponse<number>;
-            method: 'PUT'; path: '/other';
-        };
-    };
-}
+            fn: one(obj({msg: num()}), num()),
+            method: 'PUT' as 'PUT',
+            path: '/other' as '/other'
+        }
+    },
+};
+
+export type ApiMap = typeof apiObject;

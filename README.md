@@ -9,11 +9,11 @@ and
 
 Running backend
 ---------------
-    cd server; npm run watch
+    cd server; yarn; npm run watch
 
 Running frontend
 ----------------
-    cd client; npm run watch
+    cd client; yarn; npm run start
 
 Development
 -----------

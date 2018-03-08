@@ -12,6 +12,7 @@
             ]
         },
         "sourceMap": true,
+        "noErrorTruncation": true,
         "strictNullChecks": true,
         "target": "es6"
     },

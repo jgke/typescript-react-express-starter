@@ -7,18 +7,22 @@
     "url": "https://github.com/jgke/typescript-react-express-starter"
   },
   "dependencies": {
+    "api": "latest",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "tslint": "^5.8.0"
+    "tslint": "^5.8.0",
+    "typescript": "^2.7.2"
   },
   "devDependencies": {
     "@types/jest": "^21.1.5",
     "@types/node": "^8.0.47",
     "@types/react": "^16.0.18",
     "@types/react-dom": "^16.0.2",
+    "patch-package": "^5.1.1",
     "react-scripts-ts": "2.8.0"
   },
   "scripts": {
+    "prepare": "patch-package",
     "start": "PORT=3001 react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
