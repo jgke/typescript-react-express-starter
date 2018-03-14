@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {ApiMap, apiObject, ApiResponse, HTTPMethod, HTTPStatus} from '../api/base';
-import {getApi, getNumber, postApi, postNumber} from './api';
+import {getApi, getNumber, postApi, postNumber} from './controller';
 
 const apiPrefix = '/api';
 
@@ -54,9 +54,8 @@ function hostApi(app: express.Express, api: ApiMap): void {
 function makeApiCall<Path extends keyof ApiMap, Method extends keyof ApiMap[Path]>(
     /* Here, tsc thinks it can't get 'fn' from the api, but it's just because tsc doesn't
        believe in itself -- you can do it, tsc! I believe in you! */
-    // @ts-ignore
+    // Actually caused by https://github.com/Microsoft/TypeScript/issues/21760 - there's a monkey patch for this
     handler: ApiMap[Path][Method]['fn']): {
-    // @ts-ignore
         fn: ApiMap[Path][Method]['fn'];
         method: Method;
         path: Path;
@@ -69,33 +68,18 @@ function makeApiCall<Path extends keyof ApiMap, Method extends keyof ApiMap[Path
 }
 
 /**
- * Create a simple response.
- * @param status Response status code
- * @param message Response body
- */
-// tslint:disable-next-line:promise-function-async
-export function makeResponse<Res>(status: HTTPStatus, message: Res): ApiResponse<Res> {
-    return new Promise(resolve => {
-        resolve({status, message});
-    });
-}
-
-/**
  * Initialize routing.
  * @param app Express application
  */
 export function initRoutes(app: express.Express) {
     hostApi(app, {
         '/api': {
-            GET: makeApiCall(() => makeResponse(HTTPStatus.OK, getApi())),
-            /* For some reason, TSC refuses to infer the type parameters here, which means
-            that 'msg' is 'any' unless we manually specify them :(
-            It's fine for the GET, as it doesn't take any parameters. */
-            POST: makeApiCall<'/api', 'POST'>(msg => makeResponse(HTTPStatus.OK, postApi(msg.message))),
+            GET: makeApiCall(getApi),
+            POST: makeApiCall(postApi)
         },
         '/other': {
-            GET: makeApiCall(() => makeResponse(HTTPStatus.OK, getNumber())),
-            PUT: makeApiCall<'/other', 'PUT'>(msg => makeResponse(HTTPStatus.OK, postNumber(msg.msg))),
+            GET: makeApiCall(getNumber),
+            PUT: makeApiCall(postNumber)
         }
     });
 }

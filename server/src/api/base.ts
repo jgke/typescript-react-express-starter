@@ -1,4 +1,4 @@
-// tslint:disable
+// tslint:disable:no-any
 function str(): string {
     return ((p: any) => typeof p === 'string') as any as string;
 }
@@ -8,21 +8,21 @@ function num(): number {
 }
 
 function obj<T>(p: T): T {
-    return ((inner: T) => console.log(inner, p) ||
+    return ((inner: T) =>
             Object.keys(p).every(
                 (checkme: keyof T) => (p as any)[checkme](inner[checkme]))
     ) as any as T;
 }
 
 function zero<T>(returns: T) {
-    return (() => true) as any as () => ApiResponse<T>
+    return (() => true) as any as () => ApiResponse<T>;
 }
 
 function one<R, T>(takes: R, returns: T) {
-    return ((t: any) => (takes as any)(t)) as any as (p: R) => ApiResponse<T>
+    return ((t: any) => (takes as any)(t)) as any as (p: R) => ApiResponse<T>;
 }
 
-// tslint:enable
+// tslint:enable:no-any
 
 export type root = () => string;
 
@@ -50,7 +50,6 @@ export type ApiResponse<Res> = Promise<ApiResponseValue<Res>>;
  *   }
  * }
  */
-// tslint:disable:prefer-method-signature
 export const apiObject = {
     '/api': {
         GET: {

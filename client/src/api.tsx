@@ -33,7 +33,7 @@ function wrapApi(simpleApi: ApiMap): ApiMap {
         Object.keys(simpleApi[path]).forEach((method: HTTPMethod) => {
             // tslint:disable-next-line:no-any
             api[path][method] = {fn: (p: any) => apiCallWrapper(path, method, p)};
-            // we can ignore path and method here, they're useless on this side
+            // We can ignore path and method here, they're useless on this side
         });
     });
 
