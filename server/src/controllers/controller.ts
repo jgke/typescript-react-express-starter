@@ -8,11 +8,11 @@ function makeResponse<Res>(status: HTTPStatus, message: Res): ApiResponse<Res> {
 
 let data = '';
 
-export function getApi() {
+export function getString() {
     return makeResponse(HTTPStatus.OK, data);
 }
 
-export function postApi(msg: {message: typeof data}) {
+export function postString(msg: {message: typeof data}) {
     data = msg.message;
 
     return makeResponse(HTTPStatus.OK, data);

@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {ApiMap, apiObject, ApiResponse, HTTPMethod, HTTPStatus} from '../api/base';
-import {getApi, getNumber, postApi, postNumber} from './controller';
+import {getNumber, getString, postNumber, postString} from './controller';
 
 const apiPrefix = '/api';
 
@@ -74,8 +74,8 @@ function makeApiCall<Path extends keyof ApiMap, Method extends keyof ApiMap[Path
 export function initRoutes(app: express.Express) {
     hostApi(app, {
         '/api': {
-            GET: makeApiCall(getApi),
-            POST: makeApiCall(postApi)
+            GET: makeApiCall(getString),
+            POST: makeApiCall(postString)
         },
         '/other': {
             GET: makeApiCall(getNumber),
