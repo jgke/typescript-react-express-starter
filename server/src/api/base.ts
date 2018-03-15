@@ -1,16 +1,33 @@
-// tslint:disable:no-any
-function str(): string {
-    return ((p: any) => typeof p === 'string') as any as string;
+export type HTTPMethod = 'GET' | 'POST' | 'PUT';
+
+export enum HTTPStatus {
+    OK = 200,
+    BadRequest = 400,
+    InternalServerError = 500
 }
+
+export interface ApiResponseValue<Res> {
+    status: HTTPStatus;
+    message: Res;
+}
+
+export type ApiResponse<Res> = Promise<ApiResponseValue<Res>>;
+
+// tslint:disable:no-any
 
 function num(): number {
     return ((p: any) => typeof p === 'number') as any as number;
 }
 
+function str(): string {
+    return ((p: any) => typeof p === 'string') as any as string;
+}
+
 function obj<T>(p: T): T {
     return ((inner: T) =>
             Object.keys(p).every(
-                (checkme: keyof T) => (p as any)[checkme](inner[checkme]))
+                (checkme: keyof T) =>
+                    (p as any)[checkme](inner[checkme]))
     ) as any as T;
 }
 
@@ -24,55 +41,15 @@ function one<R, T>(takes: R, returns: T) {
 
 // tslint:enable:no-any
 
-export type root = () => string;
-
-export type HTTPMethod = 'GET' | 'POST' | 'PUT';
-
-export enum HTTPStatus {
-    OK = 200,
-    Arg = 400,
-    InternalServerError = 500
-}
-
-export interface ApiResponseValue<Res> {
-    status: HTTPStatus;
-    message: Res;
-}
-
-export type ApiResponse<Res> = Promise<ApiResponseValue<Res>>;
-
-/**
- * The whole application API goes here. It should be in the form
- * { [path: string]: {
- *   [method: HTTPMethod]:
- *     fn: RequestType => ApiResponse<ResponseType>,
- *     method: HTTPMethod, path: string
- *   }
- * }
- */
 export const apiObject = {
-    '/api': {
-        GET: {
-            fn: zero(str()),
-            method: 'GET' as 'GET',
-            path: '/api' as '/api'
-        },
-        POST: {
-            fn: one(obj({message: str()}), str()),
-            method: 'POST' as 'POST',
-            path: '/api' as '/api'
-        }
+    str: {
+        GET: zero(str()),
+        POST: one(obj({message: str()}), str())
     },
-    '/other': {
-        GET: {
-            fn: zero(num()),
-            method: 'GET' as 'GET',
-            path: '/other' as '/other'
-        },
-        PUT: {
-            fn: one(obj({msg: num()}), num()),
-            method: 'PUT' as 'PUT',
-            path: '/other' as '/other'
+    num: {
+        nested: {
+            GET: zero(num()),
+            PUT: one(obj({msg: num()}), num())
         }
     },
 };

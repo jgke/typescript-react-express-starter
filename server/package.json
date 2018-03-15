@@ -9,7 +9,6 @@
   "author": "Jaakko Hannikainen",
   "license": "MIT",
   "scripts": {
-    "prepare": "patch-package",
     "start": "npm run build && npm run watch",
     "build": "npm run build-ts && npm run tslint",
     "serve": "nodemon dist/server.js",
@@ -69,8 +68,6 @@
     "concurrently": "^3.4.0",
     "jest": "^19.0.2",
     "nodemon": "^1.11.0",
-    "patch-package": "^5.1.1",
-    "postinstall-prepare": "^1.0.1",
     "shelljs": "^0.7.7",
     "supertest": "^2.0.1",
     "ts-jest": "^19.0.8",

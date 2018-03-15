@@ -19,5 +19,5 @@ Development
 -----------
 In order to add a new api endpoint, it must be added first in
 server/api/base.ts. After that, the compiler will throw errors until both
-server/controllers/routes.ts and client/src/api.tsx are updated accordingly.
+server/controllers/routes.ts and client/src/clientApi.tsx are updated accordingly.
 

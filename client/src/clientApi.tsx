@@ -1,6 +1,6 @@
 import {ApiMap, apiObject, ApiResponse, ApiResponseValue, HTTPMethod, HTTPStatus} from './base';
 
-const baseUrl = 'http://localhost:3000/api';
+const baseUrl = 'http://localhost:3000/';
 
 export function doApiCall<Req>(path: string, requestBody: Req, httpMethod: HTTPMethod): Promise<Response> {
     const headers = new Headers();
@@ -23,21 +23,25 @@ export function apiCallWrapper<Req, Res>(path: string, method: HTTPMethod, body:
             ));
 }
 
-/* Wrap the argument object so that path.method.fn makes requests to the server */
-function wrapApi(simpleApi: ApiMap): ApiMap {
-    // tslint:disable-next-line:no-any
-    const api: any = {};
+// tslint:disable:no-any
 
-    Object.keys(simpleApi).forEach((path: keyof ApiMap) => {
-        api[path] = {};
-        Object.keys(simpleApi[path]).forEach((method: HTTPMethod) => {
-            // tslint:disable-next-line:no-any
-            api[path][method] = {fn: (p: any) => apiCallWrapper(path, method, p)};
-            // We can ignore path and method here, they're useless on this side
-        });
+/* Wrap the argument object so that path.method.fn makes requests to the server */
+function wrapApi(prefix: string[], api: any): ApiMap {
+    const wrapped: any = {};
+
+    Object.keys(api).forEach((path: string) => {
+        wrapped[path] = {};
+        if (typeof api[path] !== 'object') {
+            const method: HTTPMethod = path as HTTPMethod;
+            wrapped[path] = (body: any) => apiCallWrapper(prefix.join('/'), method, body);
+        } else {
+            wrapped[path] = wrapApi(prefix.concat([path]), api[path]);
+        }
     });
 
-    return api;
+    return wrapped;
 }
 
-export const apiMap: ApiMap = wrapApi(apiObject);
+// tslint:enable:no-any
+
+export const apiMap = wrapApi(['api'], apiObject);
