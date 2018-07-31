@@ -26,8 +26,8 @@ function str(): string {
 function obj<T>(p: T): T {
     return ((inner: T) =>
             Object.keys(p).every(
-                (checkme: keyof T) =>
-                    (p as any)[checkme](inner[checkme]))
+                (checkme: string) =>
+                    (p as any)[checkme]((inner as any)[checkme]))
     ) as any as T;
 }
 

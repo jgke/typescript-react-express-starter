@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import './App.css';
+import './app.css';
 import {apiMap} from './clientApi';
 
 interface State {
@@ -14,9 +14,6 @@ export class App extends React.Component<{}, State> {
     public constructor(props: {}) {
         super(props);
         this.state = {str: '', num: '0', showStr: '', showNum: 0};
-        this.sendMsg = this.sendMsg.bind(this);
-        this.sendNumber = this.sendNumber.bind(this);
-        this.updateMsg = this.updateMsg.bind(this);
     }
 
     public componentDidMount(): void {
@@ -37,25 +34,25 @@ export class App extends React.Component<{}, State> {
         );
     }
 
-    private sendMsg(msg: React.ChangeEvent<HTMLInputElement>): void {
+    private readonly sendMsg = (msg: React.ChangeEvent<HTMLInputElement>) => {
         const str = msg.target.value;
         this.setState({str});
         apiMap.str.POST({message: str})
             .then(this.updateMsg)
-            .catch(console.warn);
+            .catch(App.handleError);
     }
 
-    private sendNumber(msg: React.ChangeEvent<HTMLInputElement>): void {
+    private readonly sendNumber = (msg: React.ChangeEvent<HTMLInputElement>) => {
         const num = msg.target.value.replace('[^0-9]', '');
         this.setState({num});
         if (num.length && num !== this.state.num) {
-            apiMap.num.nested.PUT({msg: Number.parseInt(num)})
+            apiMap.num.nested.PUT({msg: Number.parseInt(num, 10)})
                 .then(this.updateMsg)
-                .catch(console.warn);
+                .catch(App.handleError);
         }
     }
 
-    private updateMsg(): void {
+    private readonly updateMsg = () => {
         apiMap.str.GET()
             .then(msg =>
                 apiMap.num.nested.GET()
@@ -65,7 +62,10 @@ export class App extends React.Component<{}, State> {
                             showNum: num.message
                         });
                     })
-                    .catch(console.warn))
-            .catch(console.warn);
+                    .catch(App.handleError))
+            .catch(App.handleError);
     }
+
+    // tslint:disable-next-line:no-unbound-method
+    private static readonly handleError = console.warn;
 }
