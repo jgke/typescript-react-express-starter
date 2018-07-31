@@ -31,25 +31,23 @@ function obj<T>(p: T): T {
     ) as any as T;
 }
 
-function zero<T>(returns: T) {
-    return (() => true) as any as () => ApiResponse<T>;
-}
-
-function one<R, T>(takes: R, returns: T) {
-    return ((t: any) => (takes as any)(t)) as any as (p: R) => ApiResponse<T>;
+// This could be TS extends any[] but since we can take a maximum of one parameter
+// for a HTTP method (the body) let's restrict this to one
+function fun<T, TS extends [any?]>(returns: T, ...takes: TS) {
+    return ((...t: TS) => takes.every((validator, i) => validator(t[i]))) as any as (...t: TS) => ApiResponse<T>;
 }
 
 // tslint:enable:no-any
 
 export const apiObject = {
     str: {
-        GET: zero(str()),
-        POST: one(obj({message: str()}), str())
+        GET: fun(str()),
+        POST: fun(str(), obj({message: str()}))
     },
     num: {
         nested: {
-            GET: zero(num()),
-            PUT: one(obj({msg: num()}), num())
+            GET: fun(num()),
+            PUT: fun(num(), obj({msg: num()}))
         }
     },
 };
