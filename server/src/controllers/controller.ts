@@ -1,31 +1,23 @@
-import {ApiResponse, HTTPStatus} from '../api/base';
+import {Customer} from '../api/base';
 
-function makeResponse<Res>(status: HTTPStatus, message: Res): ApiResponse<Res> {
-    return new Promise(resolve => {
-        resolve({status, message});
-    });
+const customers: Customer[] = [];
+let id = 0;
+
+export function getCustomers(): Promise<Customer[]> {
+    return new Promise(resolve => resolve(customers));
 }
 
-let data = '';
+export function addCustomer(customerName: string): Promise<Customer> {
+    const newCustomer = {name: customerName, id: id++};
+    customers.push(newCustomer);
 
-export function getString() {
-    return makeResponse(HTTPStatus.OK, data);
+    return new Promise(resolve => resolve(newCustomer));
 }
 
-export function postString(msg: {message: typeof data}) {
-    data = msg.message;
+export function searchCustomers(params: {id?: number; name?: string}): Promise<Customer[]> {
+    const filteredCustomers = customers
+        .filter(customer => !params.id || customer.id === params.id)
+        .filter(customer => !params.name || customer.name.includes(params.name));
 
-    return makeResponse(HTTPStatus.OK, data);
-}
-
-let num = 0;
-
-export function getNumber() {
-    return makeResponse(HTTPStatus.OK, num);
-}
-
-export function postNumber(msg: {msg: typeof num}) {
-    num = msg.msg;
-
-    return makeResponse(HTTPStatus.OK, num);
+    return new Promise(resolve => resolve(filteredCustomers));
 }

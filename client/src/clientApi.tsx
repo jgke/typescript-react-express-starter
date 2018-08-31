@@ -1,26 +1,18 @@
-import {ApiMap, apiObject, ApiResponse, ApiResponseValue, HTTPMethod, HTTPStatus} from './base';
+import {ApiMap, apiObject, ApiResponse, HTTPMethod} from './base';
 
-const baseUrl = 'http://localhost:3000/';
+const baseAddress = 'http://localhost:3000';
 
-export function doApiCall<Req>(path: string, requestBody: Req, httpMethod: HTTPMethod): Promise<Response> {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+function apiCall<QueryParams, Body, Res>(path: string, queryParams: QueryParams,
+                                         method: string, body: Body): Promise<Res> {
+    const address = new URL(`${baseAddress}/${path}`);
+    Object.keys(queryParams || {})
+        .forEach(key => address.searchParams.append(key, queryParams[key]));
 
-    const method = httpMethod;
-    const body = JSON.stringify(requestBody);
-
-    return fetch(baseUrl + path, {headers, method, body});
-}
-
-export function apiCallWrapper<Req, Res>(path: string, method: HTTPMethod, body: Req): ApiResponse<Res> {
-    return doApiCall<Req>(path, body, method)
-        .then(val => val.json()
-            .then((message: Res) => new Promise<ApiResponseValue<Res>>(
-                resolve => {
-                    const response: ApiResponseValue<Res> = {status: val.status as HTTPStatus, message};
-                    resolve(response);
-                })
-            ));
+    return fetch(address.toString(), {body: body && JSON.stringify({message: body}),
+                                      method,
+                                      headers: { 'Content-Type': 'application/json'}})
+        .then(val => val.json())
+        .then((message: ApiResponse<Res>) => new Promise<Res>(resolve => resolve(message.message)));
 }
 
 // tslint:disable:no-any
@@ -33,7 +25,13 @@ function wrapApi(prefix: string[], api: any): ApiMap {
         wrapped[path] = {};
         if (typeof api[path] !== 'object') {
             const method: HTTPMethod = path as HTTPMethod;
-            wrapped[path] = (body: any) => apiCallWrapper(prefix.join('/'), method, body);
+            if (method === 'GET') {
+                wrapped[path] = (params: any) =>
+                    apiCall(prefix.join('/'), params, method, undefined);
+            } else {
+                wrapped[path] = (body: any, queryParams: any = {}) =>
+                    apiCall(prefix.join('/'), queryParams, method, body);
+            }
         } else {
             wrapped[path] = wrapApi(prefix.concat([path]), api[path]);
         }

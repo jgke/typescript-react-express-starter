@@ -1,9 +1,14 @@
 import * as express from 'express';
 
-import {ApiMap, apiObject, ApiResponse, HTTPStatus} from '../api/base';
-import {getNumber, getString, postNumber, postString} from './controller';
+import {ApiMap, apiObject, HTTPStatus} from '../api/base';
+import {addCustomer, getCustomers, searchCustomers} from './controller';
 
 const apiPrefix = 'api';
+
+// tslint:disable:no-any
+function dropFirstParameter(fn: any): any {
+    return (...args: any[]) => fn(...args.splice(1));
+}
 
 /**
  * Initialize the routes in the given map
@@ -11,7 +16,6 @@ const apiPrefix = 'api';
  * @param prefix api prefix
  * @param api Api to iterate
  */
-// tslint:disable:no-any
 function hostApi(app: express.Express, prefix: string[], api: ApiMap, checkers: any): void {
     const methods: any = {
         GET: app.get.bind(app),
@@ -22,17 +26,28 @@ function hostApi(app: express.Express, prefix: string[], api: ApiMap, checkers: 
         if (typeof (api as any)[key] !== 'object') {
             const path = `/${prefix.join('/')}`;
             methods[key](path, (req: any, res: any) => {
-                const handler = (api as any)[key];
-                const checker = checkers[key];
-                const response: ApiResponse<any> = handler(req.body);
-                if (checker && !checker(req.body)) {
+                const body = req.body.message;
+                const queryParameters = req.query;
+
+                let handler: any;
+                let checker: any;
+                if (key === 'GET') {
+                    // GETs don't have a body, so drop it from the list
+                    handler = dropFirstParameter((api as any)[key]);
+                    checker = dropFirstParameter(checkers[key]);
+                } else {
+                    handler = (api as any)[key];
+                    checker = checkers[key];
+                }
+
+                if (!checker(body, queryParameters)) {
                     res.status(HTTPStatus.BadRequest);
                     res.send('Bad request');
                 } else {
-                    response
-                        .then(value => {
-                            res.status(value.status);
-                            res.send(JSON.stringify(value.message));
+                    handler(body, queryParameters)
+                        .then((value: any) => {
+                            res.status(200);
+                            res.send(JSON.stringify({message: value}));
                         })
                         .catch(() => {
                             res.status(HTTPStatus.InternalServerError);
@@ -57,15 +72,12 @@ export function initRoutes(app: express.Express) {
         app,
         [apiPrefix],
         {
-            str: {
-                GET: getString,
-                POST: postString
+            customers: {
+                GET: getCustomers,
+                POST: addCustomer
             },
-            num: {
-                nested: {
-                    GET: getNumber,
-                    PUT: postNumber
-                }
+            search: {
+                GET: searchCustomers
             }
         },
         apiObject);
