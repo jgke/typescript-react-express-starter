@@ -1,7 +1,28 @@
 .App {
-  text-align: center;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .App-intro {
-  font-size: large;
+    font-size: large;
+}
+
+.form {
+    text-align: left;
+    width: 40%;
+    background-color: whitesmoke;
+    padding: 0 20px 20px;
+    border-radius: 5px;
+}
+
+label > span {
+    font-weight: 700;
+    display: block;
+    margin-top: 20px;
+}
+
+button {
+    margin-left: 20px;
 }

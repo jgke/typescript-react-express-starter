@@ -14,9 +14,9 @@ export function addCustomer(customerName: string): Promise<Customer> {
     return new Promise(resolve => resolve(newCustomer));
 }
 
-export function searchCustomers(params: {id?: number; name?: string}): Promise<Customer[]> {
+export function searchCustomers(params: {id?: string; name?: string}): Promise<Customer[]> {
     const filteredCustomers = customers
-        .filter(customer => !params.id || customer.id === params.id)
+        .filter(customer => !params.id || `${customer.id}` === params.id)
         .filter(customer => !params.name || customer.name.includes(params.name));
 
     return new Promise(resolve => resolve(filteredCustomers));

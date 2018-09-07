@@ -40,9 +40,10 @@ function hostApi(app: express.Express, prefix: string[], api: ApiMap, checkers: 
                     checker = checkers[key];
                 }
 
-                if (!checker(body, queryParameters)) {
+                const checkResult: string = checker(body, queryParameters);
+                if (checkResult) {
                     res.status(HTTPStatus.BadRequest);
-                    res.send('Bad request');
+                    res.send(`Bad request: ${checkResult}`);
                 } else {
                     handler(body, queryParameters)
                         .then((value: any) => {

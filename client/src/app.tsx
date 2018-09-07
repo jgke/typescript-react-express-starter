@@ -24,17 +24,36 @@ export class App extends React.Component<{}, State> {
         this.update();
     }
 
+    private readonly handleKeyPress = (msg: React.KeyboardEvent<HTMLDivElement>) => {
+        if (msg.key === 'Enter') {
+            msg.preventDefault();
+            this.addCustomer();
+        }
+    }
+
     public render(): JSX.Element {
-        // tslint:disable
-        console.log(this.state.customers);
         return (
             <div className='App'>
-                <p className='App-intro'>
-                    {this.state.customers ? this.state.customers.map(renderCustomer) : 'No customers'}
-                </p>
-                <input value={this.state.name} onChange={this.changeAddField}/>
-                <button onClick={this.addCustomer}>Add customer</button>
-                <input value={this.state.filter} onChange={this.changeSearchField}/>
+                <div className='App-intro'>
+                    {this.state.customers.length !== 0
+                        ? this.state.customers.map(renderCustomer)
+                        : <p>No customers</p>}
+                </div>
+                <div className='form'>
+                    <div className='form-control' onKeyPress={this.handleKeyPress}>
+                        <label>
+                            <span>Customer name</span>
+                            <input value={this.state.name} onChange={this.changeAddField}/>
+                        </label>
+                        <button onClick={this.addCustomer}>Add customer</button>
+                    </div>
+                    <div className='form-control'>
+                        <label>
+                            <span>Search for customers by name or id</span>
+                            <input value={this.state.filter} onChange={this.changeSearchField}/>
+                        </label>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -62,8 +81,7 @@ export class App extends React.Component<{}, State> {
                 .then(customers => this.setState({customers}))
                 .catch(App.handleError);
         } else if (num === this.state.filter) {
-            console.log(num, this.state.filter)
-            apiMap.search.GET({id: Number.parseInt(num, 10)})
+            apiMap.search.GET({id: num})
                 .then(customers => this.setState({customers}))
                 .catch(App.handleError);
         } else {
